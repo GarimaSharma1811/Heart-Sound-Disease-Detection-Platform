@@ -1,4 +1,4 @@
-# ❤️ Heart Sound Disease Detection Platform
+# Heart Sound Disease Detection Platform
 
 A full-stack AI-powered web application that analyzes phonocardiogram (PCG) recordings to predict whether a patient's heart sounds are **Normal** or **Abnormal** using a trained XGBoost machine learning model.
 
