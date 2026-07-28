@@ -7,6 +7,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const predictionRoutes = require("./routes/predictionRoutes");
 const reportRoutes = require("./routes/reportRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 dotenv.config();
 
@@ -14,10 +15,8 @@ connectDB();
 
 const app = express();
 
-
 app.use(cors());
 app.use(express.json());
-
 
 app.use("/uploads", express.static("src/uploads"));
 
@@ -28,12 +27,10 @@ app.get("/", (req, res) => {
   });
 });
 
-
 app.use("/api/auth", authRoutes);
-
 app.use("/api/predictions", predictionRoutes);
-
 app.use("/api/reports", reportRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 const PORT = process.env.PORT || 5000;
 

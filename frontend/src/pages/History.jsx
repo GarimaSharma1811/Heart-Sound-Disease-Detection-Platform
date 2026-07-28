@@ -68,25 +68,48 @@ function History() {
       link.download = `Heart_Report_${item.patientName}.pdf`;
 
       document.body.appendChild(link);
-
       link.click();
-
       document.body.removeChild(link);
 
       window.URL.revokeObjectURL(url);
-
     } catch (err) {
       console.error(err);
       alert("Unable to generate report.");
     }
   };
 
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this prediction?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const token = localStorage.getItem("token");
+
+      await api.delete(`/predictions/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setHistory((prevHistory) =>
+        prevHistory.filter((item) => item._id !== id)
+      );
+
+      alert("Prediction deleted successfully.");
+    } catch (err) {
+      console.error(err);
+      alert("Unable to delete prediction.");
+    }
+  };
+
   const filteredHistory = history.filter((item) =>
-    item.patientName
-      ?.toLowerCase()
-      .includes(search.toLowerCase())
+    item.patientName?.toLowerCase().includes(search.toLowerCase())
   );
-    return (
+
+  return (
     <div
       style={{
         minHeight: "100vh",
@@ -219,6 +242,7 @@ function History() {
 
                     <button
                       style={deleteBtn}
+                      onClick={() => handleDelete(item._id)}
                       title="Delete Prediction"
                     >
                       <FaTrash />

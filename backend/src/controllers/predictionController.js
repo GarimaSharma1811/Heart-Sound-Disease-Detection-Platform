@@ -46,14 +46,11 @@ const predictHeartSound = async (req, res) => {
       age,
       gender,
       filename: req.file.originalname,
-
       prediction: aiResult.prediction,
       confidence: aiResult.confidence,
       probabilities: aiResult.probabilities,
-
       sampleRate: aiResult.sampleRate,
       duration: aiResult.duration,
-
       waveform: aiResult.images.waveform,
       spectrogram: aiResult.images.spectrogram,
       melSpectrogram: aiResult.images.mel,
@@ -68,9 +65,7 @@ const predictHeartSound = async (req, res) => {
       success: true,
       prediction,
     });
-
   } catch (error) {
-
     console.error(error);
 
     if (req.file && fs.existsSync(req.file.path)) {
@@ -86,7 +81,6 @@ const predictHeartSound = async (req, res) => {
 
 const getHistory = async (req, res) => {
   try {
-
     const history = await Prediction.find({
       user: req.user.id,
     }).sort({
@@ -97,9 +91,37 @@ const getHistory = async (req, res) => {
       success: true,
       history,
     });
-
   } catch (error) {
+    console.error(error);
 
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const deletePrediction = async (req, res) => {
+  try {
+    const prediction = await Prediction.findOne({
+      _id: req.params.id,
+      user: req.user.id,
+    });
+
+    if (!prediction) {
+      return res.status(404).json({
+        success: false,
+        message: "Prediction not found.",
+      });
+    }
+
+    await prediction.deleteOne();
+
+    return res.status(200).json({
+      success: true,
+      message: "Prediction deleted successfully.",
+    });
+  } catch (error) {
     console.error(error);
 
     return res.status(500).json({
@@ -112,4 +134,5 @@ const getHistory = async (req, res) => {
 module.exports = {
   predictHeartSound,
   getHistory,
+  deletePrediction,
 };

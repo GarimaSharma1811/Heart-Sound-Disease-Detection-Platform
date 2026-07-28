@@ -8,8 +8,8 @@ const auth = require("../middleware/auth");
 const {
   predictHeartSound,
   getHistory,
+  deletePrediction,
 } = require("../controllers/predictionController");
-
 
 router.post(
   "/",
@@ -18,11 +18,16 @@ router.post(
   predictHeartSound
 );
 
-
 router.get(
   "/",
   auth,
   getHistory
+);
+
+router.delete(
+  "/:id",
+  auth,
+  deletePrediction
 );
 
 module.exports = router;
