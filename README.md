@@ -12,9 +12,9 @@ A full-stack healthcare application that analyzes phonocardiogram (PCG) recordin
 
 ## Overview
 
-Heart Sound Disease Detection Platform is a full-stack AI-powered web application developed to assist in the analysis of heart sound recordings.
+The Heart Sound Disease Detection Platform is a full-stack AI-powered web application developed to assist in the analysis of heart sound recordings.
 
-Users can securely upload heart sound recordings (.wav), obtain automated predictions from a trained XGBoost model, visualize important signal representations, maintain prediction history, and generate professional PDF medical reports.
+Users can securely upload heart sound recordings (.wav), obtain automated predictions using a trained XGBoost model, visualize heart sound signal representations, maintain prediction history, and generate professional PDF medical reports.
 
 ---
 
@@ -24,15 +24,15 @@ Users can securely upload heart sound recordings (.wav), obtain automated predic
 - User Registration and Login
 - Upload Heart Sound (.wav) Recordings
 - AI-Based Heart Sound Classification
-- Confidence Score and Class Probabilities
+- Confidence Score and Prediction Probability
 - Waveform Visualization
-- Spectrogram Generation
+- Spectrogram Visualization
 - Mel Spectrogram Visualization
 - MFCC Feature Visualization
 - Patient Prediction History
 - Search Previous Predictions
 - Download PDF Medical Reports
-- MongoDB Integration
+- MongoDB Database Integration
 
 ---
 
@@ -70,58 +70,52 @@ Users can securely upload heart sound recordings (.wav), obtain automated predic
 ## Workflow
 
 1. User logs into the application.
-2. Patient information is entered.
-3. A heart sound (.wav) recording is uploaded.
+2. Patient details are entered.
+3. A heart sound recording (.wav) is uploaded.
 4. The backend sends the recording to the Flask machine learning service.
 5. The trained XGBoost model predicts whether the recording is **Normal** or **Abnormal**.
 6. Waveform, Spectrogram, Mel Spectrogram, and MFCC visualizations are generated.
 7. Prediction details are stored in MongoDB.
 8. Users can review previous predictions through the History page.
-9. A professional PDF medical report can be downloaded for every prediction.
+9. A professional PDF medical report can be generated and downloaded.
 
 ---
 
-## Application Screenshots
+# Application Screenshots
 
-### Landing Page
+## Landing Page
 
-![Landing Page](assets/screenshots/landing.png)
-
----
-
-### Login Page
-
-![Login](assets/screenshots/login.png)
+![Landing Page](assets/screenshots/front.png)
 
 ---
 
-### Upload Heart Sound
+## Login Page
 
-![Upload](assets/screenshots/upload.png)
-
----
-
-### Prediction Result
-
-![Prediction Result](assets/screenshots/result.png)
+![Login Page](assets/screenshots/login.png)
 
 ---
 
-### Signal Visualizations
+## Upload Heart Sound Recording
 
-![Signal Visualizations](assets/screenshots/visualization.png)
-
----
-
-### Prediction History
-
-![Prediction History](assets/screenshots/history.png)
+![Upload Page](assets/screenshots/upload.png)
 
 ---
 
-### PDF Medical Report
+## Prediction Result
 
-![PDF Report](assets/screenshots/report.png)
+![Prediction Result](assets/screenshots/report.png)
+
+---
+
+## Signal Visualizations
+
+![Visualizations](assets/screenshots/report1.png)
+
+---
+
+## Prediction History & PDF Report
+
+![History](assets/screenshots/report2.png)
 
 ---
 
@@ -131,33 +125,13 @@ Users can securely upload heart sound recordings (.wav), obtain automated predic
 Heart-Sound-Disease-Detection-Platform
 │
 ├── backend
-│   ├── config
-│   ├── controllers
-│   ├── middleware
-│   ├── models
-│   ├── routes
-│   ├── services
-│   ├── uploads
-│   ├── utils
-│   └── src
-│
 ├── frontend
-│   ├── public
-│   ├── src
-│   └── package.json
-│
 ├── ml
-│   ├── app.py
-│   ├── predict.py
-│   ├── generated
-│   ├── models
-│   └── requirements.txt
-│
 ├── assets
 │   └── screenshots
-│
 ├── README.md
 ├── package.json
+├── package-lock.json
 └── .gitignore
 ```
 
@@ -165,7 +139,7 @@ Heart-Sound-Disease-Detection-Platform
 
 ## Installation
 
-### Clone the Repository
+### Clone Repository
 
 ```bash
 git clone https://github.com/GarimaSharma1811/Heart-Sound-Disease-Detection-Platform.git
@@ -185,7 +159,7 @@ cd frontend
 npm install
 ```
 
-### Install Machine Learning Dependencies
+### Install Python Dependencies
 
 ```bash
 cd ml
@@ -196,21 +170,21 @@ pip install -r requirements.txt
 
 ## Run the Project
 
-### Start Backend
+### Backend
 
 ```bash
 cd backend
 npm run dev
 ```
 
-### Start Frontend
+### Frontend
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-### Start Flask Server
+### Machine Learning Service
 
 ```bash
 cd ml
