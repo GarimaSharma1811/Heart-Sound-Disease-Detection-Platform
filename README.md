@@ -113,7 +113,7 @@ Users can securely upload heart sound recordings (.wav), obtain automated predic
 
 ---
 
-## Prediction History & PDF Report
+## Additional Visualizations
 
 ![History](assets/screenshots/report2.png)
 
