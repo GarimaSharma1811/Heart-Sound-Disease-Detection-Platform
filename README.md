@@ -1,58 +1,62 @@
+<div align="center">
+
 # Heart Sound Disease Detection Platform
 
-A full-stack AI-powered web application that analyzes phonocardiogram (PCG) recordings to predict whether a patient's heart sounds are **Normal** or **Abnormal** using a trained XGBoost machine learning model.
+### AI-Powered Heart Sound Disease Detection using React, Node.js, Express, MongoDB, Flask, and XGBoost
 
-The platform enables users to upload heart sound recordings, visualize important signal representations, securely store prediction history, and generate downloadable PDF medical reports.
+A full-stack healthcare application that analyzes phonocardiogram (PCG) recordings to classify heart sounds as **Normal** or **Abnormal** using a machine learning model. The platform provides secure authentication, patient history management, signal visualizations, and downloadable PDF medical reports.
 
----
-
-## Demo
-
-**Live Demo:** Coming Soon
-
-**GitHub Repository:** https://github.com/GarimaSharma1811/Heart-Sound-Disease-Detection-Platform
+</div>
 
 ---
 
-# Features
+## Overview
+
+Heart Sound Disease Detection Platform is a full-stack AI-powered web application developed to assist in the analysis of heart sound recordings.
+
+Users can securely upload heart sound recordings (.wav), obtain automated predictions from a trained XGBoost model, visualize important signal representations, maintain prediction history, and generate professional PDF medical reports.
+
+---
+
+## Features
 
 - Secure JWT Authentication
-- User Registration & Login
-- Heart Sound (.wav) Upload
-- AI-Based Heart Disease Prediction
-- Confidence Score
-- Class Probability Distribution
+- User Registration and Login
+- Upload Heart Sound (.wav) Recordings
+- AI-Based Heart Sound Classification
+- Confidence Score and Class Probabilities
 - Waveform Visualization
-- Spectrogram Visualization
-- Mel Spectrogram
-- MFCC Visualization
+- Spectrogram Generation
+- Mel Spectrogram Visualization
+- MFCC Feature Visualization
 - Patient Prediction History
-- Search Previous Records
-- Download Professional PDF Reports
-- MongoDB Storage
+- Search Previous Predictions
+- Download PDF Medical Reports
+- MongoDB Integration
 
 ---
 
-# Tech Stack
+## Tech Stack
 
-## Frontend
+### Frontend
 
-- React
+- React.js
 - React Router
 - Axios
 - React Icons
+- CSS
 
-## Backend
+### Backend
 
 - Node.js
 - Express.js
 - MongoDB
 - Mongoose
-- Multer
 - JWT Authentication
+- Multer
 - PDFKit
 
-## Machine Learning
+### Machine Learning
 
 - Python
 - Flask
@@ -63,134 +67,172 @@ The platform enables users to upload heart sound recordings, visualize important
 
 ---
 
-# System Architecture
-
-```
-                 React Frontend
-                       │
-                       ▼
-             Node.js + Express API
-               │               │
-               │               ▼
-               │           MongoDB
-               │
-               ▼
-          Flask ML Service
-               │
-               ▼
-         XGBoost Prediction
-```
-
----
-
-# Workflow
+## Workflow
 
 1. User logs into the application.
-2. Patient details are entered.
-3. A heart sound recording (.wav) is uploaded.
-4. The backend sends the audio to the Flask ML service.
-5. The trained XGBoost model predicts the outcome.
-6. Signal visualizations are generated.
-7. Results are stored in MongoDB.
-8. Users can review previous predictions.
-9. A PDF medical report can be downloaded.
+2. Patient information is entered.
+3. A heart sound (.wav) recording is uploaded.
+4. The backend sends the recording to the Flask machine learning service.
+5. The trained XGBoost model predicts whether the recording is **Normal** or **Abnormal**.
+6. Waveform, Spectrogram, Mel Spectrogram, and MFCC visualizations are generated.
+7. Prediction details are stored in MongoDB.
+8. Users can review previous predictions through the History page.
+9. A professional PDF medical report can be downloaded for every prediction.
 
 ---
 
-# Project Screenshots
+## Application Screenshots
 
-## Login Page
+### Landing Page
 
-_Add screenshot_
-
----
-
-## Upload Page
-
-_Add screenshot_
+![Landing Page](assets/screenshots/landing.png)
 
 ---
 
-## Prediction Result
+### Login Page
 
-_Add screenshot_
-
----
-
-## Prediction History
-
-_Add screenshot_
+![Login](assets/screenshots/login.png)
 
 ---
 
-## PDF Report
+### Upload Heart Sound
 
-_Add screenshot_
-
----
-
-# Installation
-
-## Clone the Repository
-
-```bash
-git clone https://github.com/GarimaSharma1811/Heart-Sound-Disease-Detection-Platform.git
-```
-
-## Backend
-
-```bash
-cd backend
-npm install
-npm run dev
-```
-
-## Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-## Machine Learning Server
-
-```bash
-cd ml
-pip install -r requirements.txt
-python app.py
-```
+![Upload](assets/screenshots/upload.png)
 
 ---
 
-# Folder Structure
+### Prediction Result
 
-```
+![Prediction Result](assets/screenshots/result.png)
+
+---
+
+### Signal Visualizations
+
+![Signal Visualizations](assets/screenshots/visualization.png)
+
+---
+
+### Prediction History
+
+![Prediction History](assets/screenshots/history.png)
+
+---
+
+### PDF Medical Report
+
+![PDF Report](assets/screenshots/report.png)
+
+---
+
+## Project Structure
+
+```text
 Heart-Sound-Disease-Detection-Platform
 │
 ├── backend
+│   ├── config
+│   ├── controllers
+│   ├── middleware
+│   ├── models
+│   ├── routes
+│   ├── services
+│   ├── uploads
+│   ├── utils
+│   └── src
+│
 ├── frontend
+│   ├── public
+│   ├── src
+│   └── package.json
+│
 ├── ml
+│   ├── app.py
+│   ├── predict.py
+│   ├── generated
+│   ├── models
+│   └── requirements.txt
+│
+├── assets
+│   └── screenshots
+│
 ├── README.md
+├── package.json
 └── .gitignore
 ```
 
 ---
 
-# Future Enhancements
+## Installation
 
-- Multi-class heart disease classification
-- Doctor Dashboard
-- Cloud Deployment
-- Email PDF Reports
-- Patient Analytics Dashboard
-- Real-time Heart Sound Streaming
+### Clone the Repository
+
+```bash
+git clone https://github.com/GarimaSharma1811/Heart-Sound-Disease-Detection-Platform.git
+```
+
+### Install Backend Dependencies
+
+```bash
+cd backend
+npm install
+```
+
+### Install Frontend Dependencies
+
+```bash
+cd frontend
+npm install
+```
+
+### Install Machine Learning Dependencies
+
+```bash
+cd ml
+pip install -r requirements.txt
+```
 
 ---
 
-# Author
+## Run the Project
 
-**Garima Sharma**
+### Start Backend
+
+```bash
+cd backend
+npm run dev
+```
+
+### Start Frontend
+
+```bash
+cd frontend
+npm run dev
+```
+
+### Start Flask Server
+
+```bash
+cd ml
+python app.py
+```
+
+---
+
+## Future Improvements
+
+- Multi-class heart disease classification
+- Doctor dashboard
+- Cloud deployment
+- Email PDF reports
+- Patient analytics dashboard
+- Real-time heart sound streaming
+
+---
+
+## Author
+
+**Garima**
 
 B.Tech Computer Science Engineering
 
