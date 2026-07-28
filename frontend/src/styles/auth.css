@@ -1,0 +1,82 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.auth-container {
+  display: flex;
+  min-height: 100vh;
+  font-family: "Poppins", sans-serif;
+}
+
+.auth-left {
+  flex: 1;
+  background: linear-gradient(135deg, #5668f6, #7986ff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  padding: 60px;
+}
+
+.auth-content {
+  max-width: 500px;
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  font-size: 56px;
+  font-weight: 700;
+  margin-bottom: 35px;
+}
+
+.brand-icon {
+  font-size: 50px;
+  margin-right: 18px;
+}
+
+.brand-description {
+  font-size: 26px;
+  line-height: 1.7;
+  margin-bottom: 60px;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+}
+
+.feature-list li {
+  font-size: 24px;
+  margin-bottom: 28px;
+}
+
+.auth-right {
+  flex: 1;
+  background: #f5f7ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-card {
+  width: 520px;
+  background: white;
+  padding: 50px;
+  border-radius: 28px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+}
+
+.auth-card h2 {
+  font-size: 52px;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.auth-card p {
+  font-size: 20px;
+  color: #666;
+  margin-bottom: 40px;
+}
