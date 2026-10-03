@@ -1,5 +1,9 @@
 import os
 import uuid
+
+import matplotlib
+matplotlib.use("Agg")
+
 import joblib
 import librosa
 import librosa.display
@@ -8,10 +12,13 @@ import numpy as np
 
 from feature_extraction import extract_features
 
+
 OUTPUT_FOLDER = "generated"
 
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
+
+# Load model once when the server starts
 saved = joblib.load("models/heart_model.pkl")
 
 model = saved["model"]
@@ -23,26 +30,20 @@ print(f"Using Threshold : {threshold}")
 
 def save_waveform(signal, sr, filename):
 
-    plt.figure(figsize=(12, 3))
+    plt.figure(figsize=(10, 3))
 
     librosa.display.waveshow(
         signal,
-        sr=sr,
-        color="royalblue"
+        sr=sr
     )
 
     plt.title("PCG Waveform")
-
     plt.xlabel("Time (s)")
-
     plt.ylabel("Amplitude")
-
     plt.grid(alpha=0.3)
 
     plt.tight_layout()
-
-    plt.savefig(filename, dpi=250)
-
+    plt.savefig(filename, dpi=100)
     plt.close()
 
 
@@ -66,13 +67,10 @@ def save_spectrogram(signal, sr, filename):
     )
 
     plt.colorbar()
-
     plt.title("Spectrogram")
 
     plt.tight_layout()
-
-    plt.savefig(filename, dpi=250)
-
+    plt.savefig(filename, dpi=100)
     plt.close()
 
 
@@ -100,13 +98,10 @@ def save_mel(signal, sr, filename):
     )
 
     plt.colorbar()
-
     plt.title("Mel Spectrogram")
 
     plt.tight_layout()
-
-    plt.savefig(filename, dpi=250)
-
+    plt.savefig(filename, dpi=100)
     plt.close()
 
 
@@ -127,23 +122,22 @@ def save_mfcc(signal, sr, filename):
     )
 
     plt.colorbar()
-
     plt.title("MFCC")
 
     plt.tight_layout()
-
-    plt.savefig(filename, dpi=250)
-
+    plt.savefig(filename, dpi=100)
     plt.close()
 
 
 def predict(audio_path):
 
+    # Load audio ONCE
     signal, sample_rate = librosa.load(
         audio_path,
         sr=4000
     )
 
+    # Remove silence
     signal, _ = librosa.effects.trim(signal)
 
     duration = round(
@@ -181,6 +175,7 @@ def predict(audio_path):
         mfcc_name
     )
 
+    # Generate visualizations
     save_waveform(
         signal,
         sample_rate,
@@ -205,11 +200,18 @@ def predict(audio_path):
         mfcc_path
     )
 
-    features = extract_features(audio_path)
+    # Extract features from already-loaded signal
+    features = extract_features(
+        signal,
+        sample_rate
+    )
 
     features = np.array(features).reshape(1, -1)
 
-    abnormal_probability = model.predict_proba(features)[0][1]
+    # Prediction
+    abnormal_probability = model.predict_proba(
+        features
+    )[0][1]
 
     prediction = (
         1

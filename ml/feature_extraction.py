@@ -2,13 +2,7 @@ import librosa
 import numpy as np
 
 
-def extract_features(audio_path):
-    # Load audio
-    signal, sample_rate = librosa.load(audio_path, sr=4000)
-
-    # Remove silence
-    signal, _ = librosa.effects.trim(signal)
-
+def extract_features(signal, sample_rate):
     features = []
 
     # MFCC (20)
