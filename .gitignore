@@ -7,3 +7,12 @@ __pycache__
 uploads
 generated
 .vscode
+
+ml/dataset/
+
+.env
+# Heart sound dataset
+ml/dataset/
+
+# Environment variables
+.env

@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Heart sound dataset
+ml/dataset/
+
+# Environment variables
+.env
