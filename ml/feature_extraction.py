@@ -6,7 +6,6 @@ def extract_features(signal, sample_rate):
 
     features = []
 
-    # MFCC (20)
     mfcc = librosa.feature.mfcc(
         y=signal,
         sr=sample_rate,
@@ -16,7 +15,6 @@ def extract_features(signal, sample_rate):
     features.extend(np.mean(mfcc, axis=1))
     features.extend(np.std(mfcc, axis=1))
 
-    # Chroma
     chroma = librosa.feature.chroma_stft(
         y=signal,
         sr=sample_rate
@@ -24,7 +22,6 @@ def extract_features(signal, sample_rate):
 
     features.extend(np.mean(chroma, axis=1))
 
-    # Spectral Centroid
     centroid = librosa.feature.spectral_centroid(
         y=signal,
         sr=sample_rate
@@ -32,7 +29,6 @@ def extract_features(signal, sample_rate):
 
     features.append(np.mean(centroid))
 
-    # Spectral Bandwidth
     bandwidth = librosa.feature.spectral_bandwidth(
         y=signal,
         sr=sample_rate
@@ -40,7 +36,6 @@ def extract_features(signal, sample_rate):
 
     features.append(np.mean(bandwidth))
 
-    # Spectral Rolloff
     rolloff = librosa.feature.spectral_rolloff(
         y=signal,
         sr=sample_rate
@@ -48,18 +43,19 @@ def extract_features(signal, sample_rate):
 
     features.append(np.mean(rolloff))
 
-    # Zero Crossing Rate
     zcr = librosa.feature.zero_crossing_rate(
         signal
     )
 
     features.append(np.mean(zcr))
 
-    # RMS Energy
     rms = librosa.feature.rms(
         y=signal
     )
 
     features.append(np.mean(rms))
 
-    return np.array(features)
+    return np.asarray(
+        features,
+        dtype=np.float32
+    )

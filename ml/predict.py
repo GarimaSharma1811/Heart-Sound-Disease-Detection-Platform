@@ -1,4 +1,7 @@
 import os
+
+os.environ["NUMBA_DISABLE_JIT"] = "1"
+
 import joblib
 import librosa
 import numpy as np
@@ -6,8 +9,9 @@ import numpy as np
 from feature_extraction import extract_features
 
 
-
-saved = joblib.load("models/heart_model.pkl")
+saved = joblib.load(
+    "models/heart_model.pkl"
+)
 
 model = saved["model"]
 threshold = saved["threshold"]
@@ -18,27 +22,25 @@ print(f"Using Threshold : {threshold}")
 
 def predict(audio_path):
 
-
-
     signal, sample_rate = librosa.load(
         audio_path,
-        sr=4000
+        sr=4000,
+        mono=True
     )
 
-    # Remove silence
-    signal, _ = librosa.effects.trim(signal)
+    signal, _ = librosa.effects.trim(
+        signal
+    )
 
-
+    if len(signal) == 0:
+        raise ValueError(
+            "Audio contains no usable signal."
+        )
 
     duration = round(
-        librosa.get_duration(
-            y=signal,
-            sr=sample_rate
-        ),
+        len(signal) / sample_rate,
         2
     )
-
-
 
     features = extract_features(
         signal,
@@ -50,6 +52,9 @@ def predict(audio_path):
         dtype=np.float32
     ).reshape(1, -1)
 
+    print(
+        f"Feature shape: {features.shape}"
+    )
 
     probabilities = model.predict_proba(
         features
@@ -65,20 +70,16 @@ def predict(audio_path):
         else 0
     )
 
-
-
     confidence = (
         abnormal_probability
         if prediction == 1
         else 1 - abnormal_probability
     )
 
-
     return {
-
         "prediction":
             "Abnormal"
-            if prediction == 1
+            if prediction
             else "Normal",
 
         "confidence":
@@ -94,7 +95,6 @@ def predict(audio_path):
             duration,
 
         "probabilities": {
-
             "normal":
                 round(
                     (1 - abnormal_probability) * 100,
@@ -108,18 +108,10 @@ def predict(audio_path):
                 )
         },
 
-        # Temporarily disabled.
-        # We will add these back after
-        # prediction is working.
-
         "images": {
-
             "waveform": None,
-
             "spectrogram": None,
-
             "mel": None,
-
             "mfcc": None
         }
     }
