@@ -3,6 +3,7 @@ import numpy as np
 
 
 def extract_features(signal, sample_rate):
+
     features = []
 
     # MFCC (20)
@@ -48,12 +49,16 @@ def extract_features(signal, sample_rate):
     features.append(np.mean(rolloff))
 
     # Zero Crossing Rate
-    zcr = librosa.feature.zero_crossing_rate(signal)
+    zcr = librosa.feature.zero_crossing_rate(
+        signal
+    )
 
     features.append(np.mean(zcr))
 
     # RMS Energy
-    rms = librosa.feature.rms(y=signal)
+    rms = librosa.feature.rms(
+        y=signal
+    )
 
     features.append(np.mean(rms))
 
