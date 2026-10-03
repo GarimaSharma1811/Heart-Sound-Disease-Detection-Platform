@@ -6,6 +6,7 @@ __pycache__
 *.pyc
 uploads
 generated
+<<<<<<< HEAD
 .vscode
 
 ml/dataset/
@@ -16,3 +17,6 @@ ml/dataset/
 
 # Environment variables
 .env
+=======
+.vscode
+>>>>>>> 8907d2a1c01e9705cd082a719fd44f9ffd8f9f8d
