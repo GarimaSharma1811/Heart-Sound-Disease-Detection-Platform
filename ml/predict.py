@@ -1,107 +1,163 @@
 import os
 
-os.environ["NUMBA_DISABLE_JIT"] = "1"
+os.environ.pop("NUMBA_DISABLE_JIT", None)
+os.environ.setdefault("NUMBA_CACHE_DIR", "/tmp/numba_cache")
 
-import uuid
+import base64
+import io
 import joblib
 import librosa
 import librosa.display
 import matplotlib
+
 matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 from feature_extraction import extract_features
 
-OUTPUT_FOLDER = "generated"
 
-os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+MODEL_PATH = "models/heart_model.pkl"
 
-saved = joblib.load("models/heart_model.pkl")
+saved = joblib.load(MODEL_PATH)
 
 model = saved["model"]
 threshold = saved["threshold"]
 
 print("Model Loaded Successfully!")
 print(f"Using Threshold : {threshold}")
+print("predict.py v3 loaded")
+print("NUMBA_DISABLE_JIT:", os.environ.get("NUMBA_DISABLE_JIT"))
+print("NUMBA_CACHE_DIR:", os.environ.get("NUMBA_CACHE_DIR"))
 
 
-def save_waveform(signal, sr, filename):
-    plt.figure(figsize=(10, 3))
-    librosa.display.waveshow(signal, sr=sr)
-    plt.title("PCG Waveform")
-    plt.xlabel("Time (s)")
-    plt.ylabel("Amplitude")
-    plt.grid(alpha=0.3)
-    plt.tight_layout()
-    plt.savefig(filename, dpi=100)
-    plt.close()
+VIZ_N_FFT = 256
+VIZ_HOP = 64
 
 
-def save_spectrogram(signal, sr, filename):
-    stft = librosa.stft(signal)
-    db = librosa.amplitude_to_db(np.abs(stft), ref=np.max)
+def _fig_to_base64(fig):
+    buffer = io.BytesIO()
+    fig.savefig(
+        buffer,
+        format="png",
+        dpi=100,
+        bbox_inches="tight"
+    )
+    plt.close(fig)
+    buffer.seek(0)
+    encoded = base64.b64encode(buffer.read()).decode("utf-8")
+    return f"data:image/png;base64,{encoded}"
 
-    plt.figure(figsize=(10, 4))
-    librosa.display.specshow(
-        db,
-        sr=sr,
+
+def generate_visualizations(signal, sample_rate):
+    images = {}
+
+    fig, ax = plt.subplots(figsize=(8, 3))
+    times = np.arange(len(signal)) / sample_rate
+    ax.plot(times, signal, linewidth=0.6)
+    ax.set_title("Waveform")
+    ax.set_xlabel("Time (s)")
+    ax.set_ylabel("Amplitude")
+    images["waveform"] = _fig_to_base64(fig)
+
+    stft = np.abs(
+        librosa.stft(
+            signal,
+            n_fft=VIZ_N_FFT,
+            hop_length=VIZ_HOP
+        )
+    )
+
+    spec_db = librosa.amplitude_to_db(
+        stft,
+        ref=np.max
+    )
+
+    fig, ax = plt.subplots(figsize=(8, 3))
+
+    img = librosa.display.specshow(
+        spec_db,
+        sr=sample_rate,
+        hop_length=VIZ_HOP,
         x_axis="time",
         y_axis="hz",
-        cmap="magma"
+        ax=ax
     )
-    plt.colorbar()
-    plt.title("Spectrogram")
-    plt.tight_layout()
-    plt.savefig(filename, dpi=100)
-    plt.close()
 
+    fig.colorbar(
+        img,
+        ax=ax,
+        format="%+2.0f dB"
+    )
 
-def save_mel(signal, sr, filename):
+    ax.set_title("Spectrogram")
+    images["spectrogram"] = _fig_to_base64(fig)
+
     mel = librosa.feature.melspectrogram(
         y=signal,
-        sr=sr,
-        n_mels=128
+        sr=sample_rate,
+        n_fft=VIZ_N_FFT,
+        hop_length=VIZ_HOP,
+        n_mels=40
     )
 
-    mel_db = librosa.power_to_db(mel, ref=np.max)
+    mel_db = librosa.power_to_db(
+        mel,
+        ref=np.max
+    )
 
-    plt.figure(figsize=(10, 4))
-    librosa.display.specshow(
+    fig, ax = plt.subplots(figsize=(8, 3))
+
+    img = librosa.display.specshow(
         mel_db,
-        sr=sr,
+        sr=sample_rate,
+        hop_length=VIZ_HOP,
         x_axis="time",
         y_axis="mel",
-        cmap="viridis"
+        ax=ax
     )
-    plt.colorbar()
-    plt.title("Mel Spectrogram")
-    plt.tight_layout()
-    plt.savefig(filename, dpi=100)
-    plt.close()
 
+    fig.colorbar(
+        img,
+        ax=ax,
+        format="%+2.0f dB"
+    )
 
-def save_mfcc(signal, sr, filename):
+    ax.set_title("Mel Spectrogram")
+    images["mel"] = _fig_to_base64(fig)
+
     mfcc = librosa.feature.mfcc(
         y=signal,
-        sr=sr,
-        n_mfcc=20
+        sr=sample_rate,
+        n_mfcc=20,
+        n_fft=VIZ_N_FFT,
+        hop_length=VIZ_HOP,
+        n_mels=40
     )
 
-    plt.figure(figsize=(10, 4))
-    librosa.display.specshow(
+    fig, ax = plt.subplots(figsize=(8, 3))
+
+    img = librosa.display.specshow(
         mfcc,
+        sr=sample_rate,
+        hop_length=VIZ_HOP,
         x_axis="time",
-        cmap="coolwarm"
+        ax=ax
     )
-    plt.colorbar()
-    plt.title("MFCC")
-    plt.tight_layout()
-    plt.savefig(filename, dpi=100)
-    plt.close()
+
+    fig.colorbar(img, ax=ax)
+    ax.set_title("MFCC")
+    ax.set_ylabel("Coefficient")
+
+    images["mfcc"] = _fig_to_base64(fig)
+
+    return images
 
 
 def predict(audio_path):
+    print(f"Prediction requested for: {audio_path}")
+
     signal, sample_rate = librosa.load(
         audio_path,
         sr=4000,
@@ -118,56 +174,7 @@ def predict(audio_path):
         2
     )
 
-    uid = str(uuid.uuid4())
-
-    waveform_name = f"{uid}_waveform.png"
-    spectrogram_name = f"{uid}_spectrogram.png"
-    mel_name = f"{uid}_mel.png"
-    mfcc_name = f"{uid}_mfcc.png"
-
-    waveform_path = os.path.join(
-        OUTPUT_FOLDER,
-        waveform_name
-    )
-
-    spectrogram_path = os.path.join(
-        OUTPUT_FOLDER,
-        spectrogram_name
-    )
-
-    mel_path = os.path.join(
-        OUTPUT_FOLDER,
-        mel_name
-    )
-
-    mfcc_path = os.path.join(
-        OUTPUT_FOLDER,
-        mfcc_name
-    )
-
-    save_waveform(
-        signal,
-        sample_rate,
-        waveform_path
-    )
-
-    save_spectrogram(
-        signal,
-        sample_rate,
-        spectrogram_path
-    )
-
-    save_mel(
-        signal,
-        sample_rate,
-        mel_path
-    )
-
-    save_mfcc(
-        signal,
-        sample_rate,
-        mfcc_path
-    )
+    print("Extracting features...")
 
     features = extract_features(
         signal,
@@ -197,55 +204,55 @@ def predict(audio_path):
         else 1 - abnormal_probability
     )
 
-    return {
-        "prediction":
-            "Abnormal"
-            if prediction
-            else "Normal",
+    try:
+        print("Generating visualizations...")
 
-        "confidence":
-            round(
-                confidence * 100,
+        images = generate_visualizations(
+            signal,
+            sample_rate
+        )
+
+        print("Visualizations generated successfully.")
+
+    except Exception as e:
+        print(f"Visualization error: {e}")
+
+        images = {
+            "waveform": None,
+            "spectrogram": None,
+            "mel": None,
+            "mfcc": None
+        }
+
+    result = {
+        "prediction": "Abnormal" if prediction else "Normal",
+        "confidence": round(confidence * 100, 2),
+        "sampleRate": sample_rate,
+        "duration": duration,
+        "probabilities": {
+            "normal": round(
+                (1 - abnormal_probability) * 100,
                 2
             ),
-
-        "sampleRate":
-            sample_rate,
-
-        "duration":
-            duration,
-
-        "probabilities": {
-            "normal":
-                round(
-                    (1 - abnormal_probability) * 100,
-                    2
-                ),
-
-            "abnormal":
-                round(
-                    abnormal_probability * 100,
-                    2
-                )
+            "abnormal": round(
+                abnormal_probability * 100,
+                2
+            )
         },
-
-        "images": {
-            "waveform":
-                waveform_name,
-
-            "spectrogram":
-                spectrogram_name,
-
-            "mel":
-                mel_name,
-
-            "mfcc":
-                mfcc_name
-        }
+        "images": images
     }
+
+    print("Prediction completed successfully.")
+
+    return result
 
 
 if __name__ == "__main__":
     sample = input("Enter WAV File: ")
     result = predict(sample)
-    print(result)
+
+    print({
+        k: v
+        for k, v in result.items()
+        if k != "images"
+    })
