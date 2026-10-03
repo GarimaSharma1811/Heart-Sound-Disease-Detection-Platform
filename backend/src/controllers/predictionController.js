@@ -27,7 +27,7 @@ const predictHeartSound = async (req, res) => {
     });
 
     const flaskResponse = await axios.post(
-      "http://127.0.0.1:5001/predict",
+      "https://garima-heart-ml-2026.onrender.com/predict",
       form,
       {
         headers: form.getHeaders(),
