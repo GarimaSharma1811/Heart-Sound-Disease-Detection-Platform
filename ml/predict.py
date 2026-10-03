@@ -27,9 +27,26 @@ threshold = saved["threshold"]
 
 print("Model Loaded Successfully!")
 print(f"Using Threshold : {threshold}")
-print("predict.py v3 loaded")
+print("predict.py v4 loaded")
 print("NUMBA_DISABLE_JIT:", os.environ.get("NUMBA_DISABLE_JIT"))
 print("NUMBA_CACHE_DIR:", os.environ.get("NUMBA_CACHE_DIR"))
+
+
+try:
+    print("Warming up...")
+    warmup_time = np.arange(8000, dtype=np.float32) / 4000
+    warmup_signal = (
+        0.5 * np.sin(2 * np.pi * 50 * warmup_time)
+        + 0.05 * np.random.default_rng(0).standard_normal(8000)
+    ).astype(np.float32)
+
+    librosa.effects.trim(warmup_signal)
+    extract_features(warmup_signal, 4000)
+
+    print("Warm-up complete.")
+
+except Exception as e:
+    print(f"Warm-up failed: {e}")
 
 
 VIZ_N_FFT = 256
@@ -38,15 +55,22 @@ VIZ_HOP = 64
 
 def _fig_to_base64(fig):
     buffer = io.BytesIO()
+
     fig.savefig(
         buffer,
         format="png",
         dpi=100,
         bbox_inches="tight"
     )
+
     plt.close(fig)
+
     buffer.seek(0)
-    encoded = base64.b64encode(buffer.read()).decode("utf-8")
+
+    encoded = base64.b64encode(
+        buffer.read()
+    ).decode("utf-8")
+
     return f"data:image/png;base64,{encoded}"
 
 
@@ -54,11 +78,19 @@ def generate_visualizations(signal, sample_rate):
     images = {}
 
     fig, ax = plt.subplots(figsize=(8, 3))
+
     times = np.arange(len(signal)) / sample_rate
-    ax.plot(times, signal, linewidth=0.6)
+
+    ax.plot(
+        times,
+        signal,
+        linewidth=0.6
+    )
+
     ax.set_title("Waveform")
     ax.set_xlabel("Time (s)")
     ax.set_ylabel("Amplitude")
+
     images["waveform"] = _fig_to_base64(fig)
 
     stft = np.abs(
@@ -92,6 +124,7 @@ def generate_visualizations(signal, sample_rate):
     )
 
     ax.set_title("Spectrogram")
+
     images["spectrogram"] = _fig_to_base64(fig)
 
     mel = librosa.feature.melspectrogram(
@@ -125,6 +158,7 @@ def generate_visualizations(signal, sample_rate):
     )
 
     ax.set_title("Mel Spectrogram")
+
     images["mel"] = _fig_to_base64(fig)
 
     mfcc = librosa.feature.mfcc(
@@ -147,6 +181,7 @@ def generate_visualizations(signal, sample_rate):
     )
 
     fig.colorbar(img, ax=ax)
+
     ax.set_title("MFCC")
     ax.set_ylabel("Coefficient")
 
@@ -226,7 +261,10 @@ def predict(audio_path):
 
     result = {
         "prediction": "Abnormal" if prediction else "Normal",
-        "confidence": round(confidence * 100, 2),
+        "confidence": round(
+            confidence * 100,
+            2
+        ),
         "sampleRate": sample_rate,
         "duration": duration,
         "probabilities": {
@@ -249,6 +287,7 @@ def predict(audio_path):
 
 if __name__ == "__main__":
     sample = input("Enter WAV File: ")
+
     result = predict(sample)
 
     print({
